@@ -118,7 +118,9 @@
     "usage_stats": "Usage Statistics",
     "config_management": "Config Panel",
     "logs": "Logs Viewer",
-    "system_info": "Management Center Info"
+    "system_info": "Management Center Info",
+    "api_key_configs": "API Key Configs",
+    "model_groups": "Model Groups"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1464,7 +1466,10 @@
     "claude_api_key": "Claude API key",
     "commercial_mode_restart_required": "Commercial mode setting changed. Please restart the service for it to take effect",
     "copy_failed": "Copy failed",
-    "link_copied": "Link copied to clipboard"
+    "link_copied": "Link copied to clipboard",
+    "model_group_added": "Model group added.",
+    "model_group_updated": "Model group updated.",
+    "model_group_deleted": "Model group deleted."
   },
   "language": {
     "switch": "Language",
@@ -1490,5 +1495,48 @@
     "build_date": "Build Time",
     "version": "Management UI Version",
     "author": "Author"
+  },
+  "api_key_configs": {
+    "title": "API Key Configs",
+    "description": "Configure per-key model restrictions and load-balancing overrides.",
+    "add_button": "Add Config",
+    "empty_title": "No API Key Configs",
+    "empty_desc": "Add a config to restrict model access or override routing for a specific API key.",
+    "add_modal_title": "Add API Key Config",
+    "edit_modal_title": "Edit API Key Config",
+    "delete_title": "Delete API Key Config",
+    "delete_confirm": "Are you sure you want to delete the config for key \"{{key}}\"?",
+    "field_key": "Key",
+    "field_label": "Label",
+    "field_allowed_models": "Allowed Models",
+    "field_model_group": "Model Group",
+    "key_required": "API key is required.",
+    "key_placeholder": "Enter API key",
+    "label_placeholder": "Optional display label",
+    "allowed_models_hint": "Leave empty to allow all models.",
+    "allowed_models_placeholder": "Select or type a model name",
+    "add_model_button": "+ Add Model",
+    "model_group_hint": "Name of a model group to use for failover routing.",
+    "model_group_placeholder": "e.g. claude-failover",
+    "no_restriction": "No model restrictions"
+  },
+  "model_groups": {
+    "title": "Model Groups",
+    "description": "Define virtual model groups for priority-based failover routing.",
+    "add_button": "Add Group",
+    "empty_title": "No Model Groups",
+    "empty_desc": "Add a group to enable priority-based model failover.",
+    "add_modal_title": "Add Model Group",
+    "edit_modal_title": "Edit Model Group",
+    "delete_title": "Delete Model Group",
+    "delete_confirm": "Are you sure you want to delete the group \"{{name}}\"?",
+    "field_name": "Group Name",
+    "field_models": "Models (sorted by priority, highest first)",
+    "name_required": "Group name is required.",
+    "models_required": "At least one model is required.",
+    "name_placeholder": "e.g. claude-failover",
+    "model_placeholder": "Model name",
+    "priority_placeholder": "Priority",
+    "add_model_button": "+ Add Model"
   }
 }

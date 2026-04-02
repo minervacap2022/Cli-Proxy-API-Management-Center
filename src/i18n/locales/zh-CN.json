@@ -118,7 +118,9 @@
     "usage_stats": "使用统计",
     "config_management": "配置面板",
     "logs": "日志查看",
-    "system_info": "中心信息"
+    "system_info": "中心信息",
+    "api_key_configs": "API 密钥配置",
+    "model_groups": "模型组"
   },
   "dashboard": {
     "title": "仪表盘",
@@ -1464,7 +1466,10 @@
     "claude_api_key": "Claude API密钥",
     "commercial_mode_restart_required": "商业模式开关已变更，请重启服务后生效",
     "copy_failed": "复制失败",
-    "link_copied": "已复制"
+    "link_copied": "已复制",
+    "model_group_added": "模型组已添加。",
+    "model_group_updated": "模型组已更新。",
+    "model_group_deleted": "模型组已删除。"
   },
   "language": {
     "switch": "语言",
@@ -1490,5 +1495,48 @@
     "build_date": "构建时间",
     "version": "管理中心版本",
     "author": "作者"
+  },
+  "api_key_configs": {
+    "title": "API 密钥配置",
+    "description": "为特定 API 密钥配置模型访问限制和负载均衡覆盖。",
+    "add_button": "添加配置",
+    "empty_title": "暂无 API 密钥配置",
+    "empty_desc": "添加配置以限制特定密钥的模型访问或覆盖路由策略。",
+    "add_modal_title": "添加 API 密钥配置",
+    "edit_modal_title": "编辑 API 密钥配置",
+    "delete_title": "删除 API 密钥配置",
+    "delete_confirm": "确定要删除密钥 \"{{key}}\" 的配置吗？",
+    "field_key": "密钥",
+    "field_label": "标签",
+    "field_allowed_models": "允许的模型",
+    "field_model_group": "模型组",
+    "key_required": "API 密钥不能为空。",
+    "key_placeholder": "输入 API 密钥",
+    "label_placeholder": "可选显示标签",
+    "allowed_models_hint": "留空则允许所有模型。",
+    "allowed_models_placeholder": "选择或输入模型名称",
+    "add_model_button": "+ 添加模型",
+    "model_group_hint": "用于故障转移路由的模型组名称。",
+    "model_group_placeholder": "例如：claude-failover",
+    "no_restriction": "无模型限制"
+  },
+  "model_groups": {
+    "title": "模型组",
+    "description": "定义虚拟模型组，实现基于优先级的故障转移路由。",
+    "add_button": "添加模型组",
+    "empty_title": "暂无模型组",
+    "empty_desc": "添加模型组以启用基于优先级的模型故障转移。",
+    "add_modal_title": "添加模型组",
+    "edit_modal_title": "编辑模型组",
+    "delete_title": "删除模型组",
+    "delete_confirm": "确定要删除模型组 \"{{name}}\" 吗？",
+    "field_name": "组名",
+    "field_models": "模型列表（按优先级降序排列）",
+    "name_required": "组名不能为空。",
+    "models_required": "至少需要一个模型。",
+    "name_placeholder": "例如：claude-failover",
+    "model_placeholder": "模型名称",
+    "priority_placeholder": "优先级",
+    "add_model_button": "+ 添加模型"
   }
 }

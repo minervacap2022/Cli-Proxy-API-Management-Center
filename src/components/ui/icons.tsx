@@ -477,3 +477,27 @@ export function IconSidebarSystem({ size = 20, ...props }: IconProps) {
     </svg>
   );
 }
+
+export function IconSidebarApiKeyConfigs({ size = 20, ...props }: IconProps) {
+  return (
+    <svg {...sidebarSvgProps} width={size} height={size} {...props}>
+      <path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4" />
+      <path d="m21 2-9.6 9.6" />
+      <circle cx="7.5" cy="15.5" r="5.5" />
+    </svg>
+  );
+}
+
+export function IconSidebarModelGroups({ size = 20, ...props }: IconProps) {
+  return (
+    <svg {...sidebarSvgProps} width={size} height={size} {...props}>
+      <rect x="3" y="5" width="6" height="6" rx="1.5" />
+      <rect x="15" y="5" width="6" height="6" rx="1.5" />
+      <rect x="9" y="13" width="6" height="6" rx="1.5" />
+      <path d="M9 8h6" />
+      <path d="M12 11v2" />
+      <path d="M7.5 11v2" />
+      <path d="M16.5 11v2" />
+    </svg>
+  );
+}

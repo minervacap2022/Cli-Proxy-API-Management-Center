@@ -13,10 +13,12 @@ import { Button } from '@/components/ui/Button';
 import { PageTransition } from '@/components/common/PageTransition';
 import { MainRoutes } from '@/router/MainRoutes';
 import {
+  IconSidebarApiKeyConfigs,
   IconSidebarAuthFiles,
   IconSidebarConfig,
   IconSidebarDashboard,
   IconSidebarLogs,
+  IconSidebarModelGroups,
   IconSidebarOauth,
   IconSidebarProviders,
   IconSidebarQuota,
@@ -46,6 +48,8 @@ const sidebarIcons: Record<string, ReactNode> = {
   config: <IconSidebarConfig size={18} />,
   logs: <IconSidebarLogs size={18} />,
   system: <IconSidebarSystem size={18} />,
+  apiKeyConfigs: <IconSidebarApiKeyConfigs size={18} />,
+  modelGroups: <IconSidebarModelGroups size={18} />,
 };
 
 // Header action icons - smaller size for header buttons
@@ -426,6 +430,8 @@ export function MainLayout() {
     { path: '/oauth', label: t('nav.oauth', { defaultValue: 'OAuth' }), icon: sidebarIcons.oauth },
     { path: '/quota', label: t('nav.quota_management'), icon: sidebarIcons.quota },
     { path: '/usage', label: t('nav.usage_stats'), icon: sidebarIcons.usage },
+    { path: '/api-key-configs', label: t('nav.api_key_configs'), icon: sidebarIcons.apiKeyConfigs },
+    { path: '/model-groups', label: t('nav.model_groups'), icon: sidebarIcons.modelGroups },
     ...(config?.loggingToFile
       ? [{ path: '/logs', label: t('nav.logs'), icon: sidebarIcons.logs }]
       : []),

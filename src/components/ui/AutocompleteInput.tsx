@@ -34,21 +34,25 @@ export function AutocompleteInput({
 }: AutocompleteInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [isTyping, setIsTyping] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  
-  const normalizedOptions = options.map(opt => 
+
+  const normalizedOptions = options.map(opt =>
     typeof opt === 'string' ? { value: opt, label: opt } : { value: opt.value, label: opt.label || opt.value }
   );
 
-  const filteredOptions = normalizedOptions.filter(opt => {
-    const v = value.toLowerCase();
-    return opt.value.toLowerCase().includes(v) || (opt.label && opt.label.toLowerCase().includes(v));
-  });
+  const filteredOptions = isTyping
+    ? normalizedOptions.filter(opt => {
+        const v = value.toLowerCase();
+        return opt.value.toLowerCase().includes(v) || (opt.label && opt.label.toLowerCase().includes(v));
+      })
+    : normalizedOptions;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setIsTyping(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -56,12 +60,14 @@ export function AutocompleteInput({
   }, []);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsTyping(true);
     onChange(e.target.value);
     setIsOpen(true);
     setHighlightedIndex(-1);
   };
 
   const handleSelect = (selectedValue: string) => {
+    setIsTyping(false);
     onChange(selectedValue);
     setIsOpen(false);
   };
@@ -100,12 +106,12 @@ export function AutocompleteInput({
     <div className={`form-group ${wrapperClassName}`} ref={containerRef} style={wrapperStyle}>
       {label && <label htmlFor={id}>{label}</label>}
       <div style={{ position: 'relative' }}>
-        <input 
+        <input
             id={id}
-            className={`input ${className}`.trim()} 
+            className={`input ${className}`.trim()}
             value={value}
             onChange={handleInputChange}
-            onFocus={() => setIsOpen(true)}
+            onFocus={() => { setIsTyping(false); setIsOpen(true); }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={disabled}

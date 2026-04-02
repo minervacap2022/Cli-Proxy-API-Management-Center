@@ -1,4 +1,6 @@
 import { Navigate, useRoutes, type Location } from 'react-router-dom';
+import { ApiKeyConfigsPage } from '@/pages/ApiKeyConfigsPage';
+import { ModelGroupsPage } from '@/pages/ModelGroupsPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { AiProvidersPage } from '@/pages/AiProvidersPage';
 import { AiProvidersAmpcodeEditPage } from '@/pages/AiProvidersAmpcodeEditPage';
@@ -26,6 +28,8 @@ const mainRoutes = [
   { path: '/dashboard', element: <DashboardPage /> },
   { path: '/settings', element: <Navigate to="/config" replace /> },
   { path: '/api-keys', element: <Navigate to="/config" replace /> },
+  { path: '/api-key-configs', element: <ApiKeyConfigsPage /> },
+  { path: '/model-groups', element: <ModelGroupsPage /> },
   { path: '/ai-providers/gemini/new', element: <AiProvidersGeminiEditPage /> },
   { path: '/ai-providers/gemini/:index', element: <AiProvidersGeminiEditPage /> },
   { path: '/ai-providers/codex/new', element: <AiProvidersCodexEditPage /> },
