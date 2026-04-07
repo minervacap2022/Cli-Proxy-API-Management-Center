@@ -9,6 +9,7 @@ export interface APIKeyConfig {
   label?: string;
   'allowed-models'?: string[];
   'model-group'?: string;
+  'allow-other-models'?: boolean;
 }
 
 export const apiKeyConfigsApi = {

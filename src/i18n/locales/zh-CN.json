@@ -1518,6 +1518,9 @@
     "add_model_button": "+ 添加模型",
     "model_group_hint": "用于故障转移路由的模型组名称。",
     "model_group_placeholder": "例如：claude-failover",
+    "allow_other_models_label": "允许使用其他模型",
+    "allow_other_models_hint": "勾选后，该密钥除了可以使用组名外，还可以直接使用任意模型。",
+    "allow_other_models_badge": "允许所有模型",
     "no_restriction": "无模型限制"
   },
   "model_groups": {

@@ -1523,6 +1523,9 @@
     "add_model_button": "+ Добавить модель",
     "model_group_hint": "Имя группы моделей для маршрутизации с отказоустойчивостью.",
     "model_group_placeholder": "например: claude-failover",
+    "allow_other_models_label": "Разрешить другие модели",
+    "allow_other_models_hint": "При включении ключ может использовать любую модель напрямую в дополнение к группе.",
+    "allow_other_models_badge": "Все модели разрешены",
     "no_restriction": "Без ограничений"
   },
   "model_groups": {

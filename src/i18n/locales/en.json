@@ -1518,6 +1518,9 @@
     "add_model_button": "+ Add Model",
     "model_group_hint": "Name of a model group to use for failover routing.",
     "model_group_placeholder": "e.g. claude-failover",
+    "allow_other_models_label": "Allow other models",
+    "allow_other_models_hint": "When checked, this key can use any model directly in addition to the group.",
+    "allow_other_models_badge": "All models allowed",
     "no_restriction": "No model restrictions"
   },
   "model_groups": {

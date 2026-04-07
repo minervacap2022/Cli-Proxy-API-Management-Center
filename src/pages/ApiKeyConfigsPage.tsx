@@ -17,6 +17,7 @@ interface EditState {
   key: string;
   label: string;
   modelGroup: string;
+  allowOtherModels: boolean;
 }
 
 const EMPTY_EDIT: EditState = {
@@ -25,6 +26,7 @@ const EMPTY_EDIT: EditState = {
   key: '',
   label: '',
   modelGroup: '',
+  allowOtherModels: false,
 };
 
 export function ApiKeyConfigsPage() {
@@ -72,6 +74,7 @@ export function ApiKeyConfigsPage() {
       key: cfg.key,
       label: cfg.label ?? '',
       modelGroup: cfg['model-group'] ?? '',
+      allowOtherModels: cfg['allow-other-models'] ?? false,
     });
   };
 
@@ -87,6 +90,7 @@ export function ApiKeyConfigsPage() {
       key,
       label: edit.label.trim() || undefined,
       'model-group': edit.modelGroup.trim() || undefined,
+      'allow-other-models': edit.allowOtherModels || undefined,
     };
     setSaving(true);
     try {
@@ -189,6 +193,11 @@ export function ApiKeyConfigsPage() {
                     <span className={styles.fieldValue}>{cfg['model-group']}</span>
                   </div>
                 )}
+                {cfg['allow-other-models'] && (
+                  <div className={styles.fieldRow}>
+                    <span className={styles.allowBadge}>{t('api_key_configs.allow_other_models_badge')}</span>
+                  </div>
+                )}
                 {!cfg['model-group'] && (
                   <div className={styles.noRestriction}>{t('api_key_configs.no_restriction')}</div>
                 )}
@@ -227,6 +236,15 @@ export function ApiKeyConfigsPage() {
                 options={modelGroupNames}
                 placeholder={t('api_key_configs.model_group_placeholder')}
               />
+              <label className={styles.checkboxRow}>
+                <input
+                  type="checkbox"
+                  checked={edit.allowOtherModels}
+                  onChange={(e) => setEdit((prev) => ({ ...prev, allowOtherModels: e.target.checked }))}
+                />
+                <span className={styles.checkboxLabel}>{t('api_key_configs.allow_other_models_label')}</span>
+                <span className={styles.checkboxHint}>{t('api_key_configs.allow_other_models_hint')}</span>
+              </label>
             </div>
             <div className={styles.modalFooter}>
               <Button variant="secondary" onClick={closeEdit} disabled={saving}>
