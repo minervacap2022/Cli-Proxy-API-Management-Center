@@ -61,6 +61,7 @@ const sidebarIcons: Record<string, ReactNode> = {
   apiKeyConfigs: <IconSidebarApiKeyConfigs size={18} />,
   oauth: <IconSidebarOauth size={18} />,
   quota: <IconSidebarQuota size={18} />,
+  team: <IconSidebarApiKeyConfigs size={18} />,
   plugins: <IconSidebarPlugins size={18} />,
   pluginStore: <IconSidebarStore size={18} />,
   config: <IconSidebarConfig size={18} />,
@@ -642,6 +643,12 @@ export function MainLayout() {
       id: 'observe',
       labelKey: 'nav_groups.observe',
       items: [
+        {
+          path: '/team',
+          labelKey: 'nav.team',
+          metaKey: 'nav_meta.team',
+          icon: sidebarIcons.team,
+        },
         {
           path: '/quota',
           labelKey: 'nav.quota_management',

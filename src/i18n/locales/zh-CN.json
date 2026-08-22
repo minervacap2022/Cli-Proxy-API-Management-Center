@@ -106,6 +106,7 @@
     "plugin_store": "插件商店",
     "config_management": "配置面板",
     "logs": "日志查看",
+    "team": "团队",
     "system_info": "中心信息"
   },
   "nav_groups": {
@@ -125,8 +126,37 @@
     "plugins": "插件启停与配置",
     "plugin_store": "发现并安装插件",
     "logs": "请求追踪与排查",
+    "team": "按 API Key 标签查看用量",
     "config_management": "网关基础配置",
     "system_info": "运行与诊断信息"
+  },
+  "team": {
+    "eyebrow": "CPA 管理中心",
+    "title": "团队",
+    "description": "按 API Key 标签和模型汇总用量。绝不显示原始 API Key。",
+    "ranges": {
+      "24h": "每日",
+      "7d": "每周",
+      "30d": "每月",
+      "all": "全部时间",
+      "custom": "自定义"
+    },
+    "start": "开始",
+    "end": "结束",
+    "apply": "应用",
+    "key_labels": "API Key 标签",
+    "label_count": "{{count}} 个标签",
+    "total_tokens": "总 Token",
+    "requests": "请求数",
+    "top_model": "主要模型",
+    "model_composition": "模型构成",
+    "by_label": "按 Key 标签统计用量",
+    "label": "标签",
+    "failed": "失败",
+    "empty": "没有找到带 API Key 归属信息的用量记录。",
+    "load_failed": "无法加载团队用量。",
+    "no_token_data": "没有 Token 数据",
+    "live": "实时"
   },
   "dashboard": {
     "hero_verdict_good": "运行平稳",

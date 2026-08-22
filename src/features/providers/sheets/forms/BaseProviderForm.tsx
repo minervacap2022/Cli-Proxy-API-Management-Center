@@ -37,6 +37,7 @@ import { ApiKeyEntriesEditor } from './ApiKeyEntriesEditor';
 import { ModelEntriesEditor } from './ModelEntriesEditor';
 import styles from './sharedForm.module.scss';
 import { CLAUDE_API_BASE_URL } from '../../claudeApi';
+import { COMMAND_CODE_ANTHROPIC_PRESET } from '../../anthropicCompatibilityPresets';
 import { MAX_CREDENTIAL_WEIGHT } from '@/utils/credentialWeight';
 
 /** 模块级常量，免得每次渲染都给 picker 一个新数组引用。 */
@@ -80,16 +81,25 @@ function buildInitialForm(
   if (mode === 'create' || !resource) {
     return {
       apiKey: '',
-      name: '',
+      name: brand === 'anthropicCompatibility' ? COMMAND_CODE_ANTHROPIC_PRESET.name : '',
       baseUrl:
-        brand === 'claudeApi' ? CLAUDE_API_BASE_URL : brand === 'xai' ? XAI_API_BASE_URL : '',
+        brand === 'anthropicCompatibility'
+          ? COMMAND_CODE_ANTHROPIC_PRESET.baseUrl
+          : brand === 'claudeApi'
+            ? CLAUDE_API_BASE_URL
+            : brand === 'xai'
+              ? XAI_API_BASE_URL
+              : '',
       proxyUrl: '',
       prefix: '',
       disabled: false,
       disableCooling: false,
       priority: undefined,
       weight: undefined,
-      models: [emptyModel()],
+      models:
+        brand === 'anthropicCompatibility'
+          ? COMMAND_CODE_ANTHROPIC_PRESET.models.map((model) => ({ ...model }))
+          : [emptyModel()],
       headers: [emptyHeader()],
       excludedModelsText: '',
       websockets: brand === 'codex' || brand === 'xai' ? false : undefined,
@@ -97,7 +107,8 @@ function buildInitialForm(
         ? { mode: '', strictMode: false, sensitiveWordsText: '', cacheUserId: false }
         : undefined,
       experimentalCchSigning: isClaudeLikeBrand(brand) ? false : undefined,
-      authType: brand === 'anthropicCompatibility' ? 'bearer' : undefined,
+      authType:
+        brand === 'anthropicCompatibility' ? COMMAND_CODE_ANTHROPIC_PRESET.authType : undefined,
       testModel:
         brand === 'openaiCompatibility' ||
         brand === 'anthropicCompatibility' ||
@@ -106,7 +117,9 @@ function buildInitialForm(
         isClaudeLikeBrand(brand) ||
         brand === 'gemini' ||
         brand === 'interactions'
-          ? ''
+          ? brand === 'anthropicCompatibility'
+            ? COMMAND_CODE_ANTHROPIC_PRESET.testModel
+            : ''
           : undefined,
       apiKeyEntries:
         brand === 'openaiCompatibility' || brand === 'anthropicCompatibility'

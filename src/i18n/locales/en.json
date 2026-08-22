@@ -106,6 +106,7 @@
     "plugin_store": "Plugin Store",
     "config_management": "Config Panel",
     "logs": "Logs Viewer",
+    "team": "Team",
     "system_info": "Management Center Info"
   },
   "nav_groups": {
@@ -125,8 +126,37 @@
     "plugins": "Plugin toggles & config",
     "plugin_store": "Discover & install plugins",
     "logs": "Request tracing",
+    "team": "Usage by API-key label",
     "config_management": "Gateway configuration",
     "system_info": "Runtime & diagnostics"
+  },
+  "team": {
+    "eyebrow": "CPA Management",
+    "title": "Team",
+    "description": "Usage by API-key label and model. Raw API keys are never displayed.",
+    "ranges": {
+      "24h": "Daily",
+      "7d": "Weekly",
+      "30d": "Monthly",
+      "all": "All time",
+      "custom": "Custom"
+    },
+    "start": "Start",
+    "end": "End",
+    "apply": "Apply",
+    "key_labels": "API key labels",
+    "label_count": "{{count}} labels",
+    "total_tokens": "Total tokens",
+    "requests": "Requests",
+    "top_model": "Top model",
+    "model_composition": "Model composition",
+    "by_label": "Usage by key label",
+    "label": "Label",
+    "failed": "Failed",
+    "empty": "No usage rows with API-key attribution were found.",
+    "load_failed": "Team usage could not be loaded.",
+    "no_token_data": "No token data",
+    "live": "Live"
   },
   "dashboard": {
     "hero_verdict_good": "All systems steady",

@@ -1,4 +1,5 @@
 import { Navigate, useRoutes, type Location } from 'react-router-dom';
+import { TeamUsagePage } from '@/pages/TeamUsagePage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { ProvidersWorkbenchPage } from '@/features/providers/ProvidersWorkbenchPage';
 import { AuthFilesPage } from '@/features/authFiles/AuthFilesPage';
@@ -20,7 +21,8 @@ const createMainRoutes = (supportsPlugin: boolean) => [
   { path: '/', element: <DashboardPage /> },
   { path: '/dashboard', element: <DashboardPage /> },
   { path: '/settings', element: <Navigate to="/config" replace /> },
-  { path: '/api-keys', element: <Navigate to="/config" replace /> },
+  { path: '/api-keys', element: <Navigate to="/team" replace /> },
+  { path: '/team', element: <TeamUsagePage /> },
   { path: '/api-key-configs', element: <ApiKeyConfigsPage /> },
   { path: '/model-groups', element: <ModelGroupsPage /> },
   { path: '/quick-start', element: <ProvidersWorkbenchPage fixedBrand="apikeyFun" /> },
