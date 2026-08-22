@@ -32,39 +32,29 @@ export const isAuthFilesStatusFilterMode = (value: unknown): value is AuthFilesS
   typeof value === 'string' &&
   AUTH_FILES_STATUS_FILTER_MODE_SET.has(value as AuthFilesStatusFilterMode);
 
-const readAuthFilesUiStateFromStorage = (
-  storage: Pick<Storage, 'getItem'> | null | undefined
-): AuthFilesUiState | null => {
-  if (!storage) return null;
-  const raw = storage.getItem(AUTH_FILES_UI_STATE_KEY);
-  if (!raw) return null;
-  const parsed = JSON.parse(raw) as AuthFilesUiState;
-  return parsed && typeof parsed === 'object' ? parsed : null;
-};
-
 export const readAuthFilesUiState = (): AuthFilesUiState | null => {
   if (typeof window === 'undefined') return null;
   try {
-    return (
-      obfuscatedStorage.getItem<AuthFilesUiState>(AUTH_FILES_UI_STATE_KEY) ??
-      readAuthFilesUiStateFromStorage(window.sessionStorage)
-    );
+    window.localStorage.removeItem(AUTH_FILES_UI_STATE_KEY);
+    window.sessionStorage.removeItem(AUTH_FILES_UI_STATE_KEY);
   } catch {
-    return null;
+    // Ignore unavailable browser storage.
   }
+  return null;
 };
 
 export const writeAuthFilesUiState = (state: AuthFilesUiState) => {
+  void state;
   if (typeof window === 'undefined') return;
   try {
-    obfuscatedStorage.setItem(AUTH_FILES_UI_STATE_KEY, state);
+    window.localStorage.removeItem(AUTH_FILES_UI_STATE_KEY);
   } catch {
-    // ignore
+    // Ignore unavailable browser storage.
   }
   try {
     window.sessionStorage.removeItem(AUTH_FILES_UI_STATE_KEY);
   } catch {
-    // ignore
+    // Ignore unavailable browser storage.
   }
 };
 
@@ -87,4 +77,3 @@ export const writePersistedAuthFilesCompactMode = (compactMode: boolean) => {
     // ignore
   }
 };
-import { obfuscatedStorage } from '@/services/storage/secureStorage';
