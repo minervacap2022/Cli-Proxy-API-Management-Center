@@ -1,10 +1,5 @@
 export const AUTH_FILES_SORT_MODES = ['default', 'az', 'priority'] as const;
-export const AUTH_FILES_STATUS_FILTER_MODES = [
-  'all',
-  'enabled',
-  'disabled',
-  'problem',
-] as const;
+export const AUTH_FILES_STATUS_FILTER_MODES = ['all', 'enabled', 'disabled', 'problem'] as const;
 
 export type AuthFilesSortMode = (typeof AUTH_FILES_SORT_MODES)[number];
 export type AuthFilesStatusFilterMode = (typeof AUTH_FILES_STATUS_FILTER_MODES)[number];
@@ -51,7 +46,7 @@ export const readAuthFilesUiState = (): AuthFilesUiState | null => {
   if (typeof window === 'undefined') return null;
   try {
     return (
-      readAuthFilesUiStateFromStorage(window.localStorage) ??
+      obfuscatedStorage.getItem<AuthFilesUiState>(AUTH_FILES_UI_STATE_KEY) ??
       readAuthFilesUiStateFromStorage(window.sessionStorage)
     );
   } catch {
@@ -62,7 +57,7 @@ export const readAuthFilesUiState = (): AuthFilesUiState | null => {
 export const writeAuthFilesUiState = (state: AuthFilesUiState) => {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.setItem(AUTH_FILES_UI_STATE_KEY, JSON.stringify(state));
+    obfuscatedStorage.setItem(AUTH_FILES_UI_STATE_KEY, state);
   } catch {
     // ignore
   }
@@ -92,3 +87,4 @@ export const writePersistedAuthFilesCompactMode = (compactMode: boolean) => {
     // ignore
   }
 };
+import { obfuscatedStorage } from '@/services/storage/secureStorage';
