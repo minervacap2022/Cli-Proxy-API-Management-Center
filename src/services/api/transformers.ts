@@ -247,6 +247,12 @@ const normalizeOpenAIProvider = (
   const models = normalizeModelAliases(provider.models);
   const priority = provider.priority;
   const testModel = provider['test-model'];
+  const protocol = String(provider.protocol ?? '')
+    .trim()
+    .toLowerCase();
+  const authType = String(provider['auth-type'] ?? '')
+    .trim()
+    .toLowerCase();
 
   const result: OpenAIProviderConfig = {
     name: String(name),
@@ -264,6 +270,10 @@ const normalizeOpenAIProvider = (
   if (models.length) result.models = models;
   if (priority !== undefined) result.priority = Number(priority);
   if (testModel) result.testModel = String(testModel);
+  if (protocol === 'anthropic') result.protocol = 'anthropic';
+  else result.protocol = 'openai';
+  if (authType === 'x-api-key') result.authType = 'x-api-key';
+  else result.authType = 'bearer';
   const authIndex = normalizeAuthIndex(provider['auth-index']);
   if (authIndex) result.authIndex = authIndex;
   if (sourceIndex !== undefined) result.sourceIndex = sourceIndex;

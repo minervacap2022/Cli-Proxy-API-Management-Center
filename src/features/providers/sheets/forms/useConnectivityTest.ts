@@ -64,6 +64,8 @@ export interface UseConnectivityTestArgs {
   apiKey?: string;
   fallbackApiKey?: string;
   authIndex?: string;
+  compatibilityProtocol?: 'openai' | 'anthropic';
+  compatibilityAuthType?: 'bearer' | 'x-api-key';
 }
 
 export interface ConnectivityErrorMessages {
@@ -88,6 +90,71 @@ export interface UseConnectivityTestResult {
   runClaude: () => Promise<void>;
 }
 
+interface CompatibilityProbeRequestInput {
+  baseUrl: string;
+  protocol: 'openai' | 'anthropic';
+  authType: 'bearer' | 'x-api-key';
+  model: string;
+  apiKey?: string;
+  authIndex?: string;
+  formHeaders: Array<{ key: string; value: string }>;
+}
+
+export const buildCompatibilityProbeRequest = ({
+  baseUrl,
+  protocol,
+  authType,
+  model,
+  apiKey,
+  authIndex,
+  formHeaders,
+}: CompatibilityProbeRequestInput) => {
+  const isAnthropic = protocol === 'anthropic';
+  const header: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...buildHeaderObject(formHeaders),
+  };
+
+  if (isAnthropic) {
+    if (!hasHeader(header, 'anthropic-version')) {
+      header['anthropic-version'] = DEFAULT_ANTHROPIC_VERSION;
+    }
+    if (authType === 'x-api-key') {
+      if (!hasHeader(header, 'x-api-key')) {
+        if (apiKey) header['x-api-key'] = apiKey;
+        else if (authIndex) header['x-api-key'] = '$TOKEN$';
+      }
+    } else if (!hasHeader(header, 'authorization')) {
+      if (apiKey) header.Authorization = `Bearer ${apiKey}`;
+      else if (authIndex) header.Authorization = 'Bearer $TOKEN$';
+    }
+  } else if (!hasHeader(header, 'authorization')) {
+    if (apiKey) header.Authorization = `Bearer ${apiKey}`;
+    else if (authIndex) header.Authorization = 'Bearer $TOKEN$';
+  }
+
+  return {
+    url: isAnthropic
+      ? buildClaudeMessagesEndpoint(baseUrl)
+      : buildOpenAIChatCompletionsEndpoint(baseUrl),
+    header,
+    data: JSON.stringify(
+      isAnthropic
+        ? {
+            model,
+            max_tokens: 8,
+            messages: [{ role: 'user', content: 'Hi' }],
+          }
+        : {
+            model,
+            messages: [{ role: 'user', content: 'Hi' }],
+            stream: false,
+            max_tokens: 5,
+          }
+    ),
+  };
+};
+
 export function useConnectivityTest(
   args: UseConnectivityTestArgs,
   messages: ConnectivityErrorMessages
@@ -102,6 +169,8 @@ export function useConnectivityTest(
     apiKey,
     fallbackApiKey,
     authIndex,
+    compatibilityProtocol = 'openai',
+    compatibilityAuthType = 'bearer',
   } = args;
 
   const entriesCount = apiKeyEntries?.length ?? 0;
@@ -182,7 +251,7 @@ export function useConnectivityTest(
 
   const runOpenAIKey = useCallback(
     async (idx: number): Promise<boolean> => {
-      if (brand !== 'openaiCompatibility') return false;
+      if (brand !== 'openaiCompatibility' && brand !== 'anthropicCompatibility') return false;
 
       const trimmedBase = baseUrl.trim();
       if (!trimmedBase) {
@@ -192,18 +261,27 @@ export function useConnectivityTest(
         });
         return false;
       }
-      const endpoint = buildOpenAIChatCompletionsEndpoint(trimmedBase);
-      if (!endpoint) {
+      const entry = apiKeyEntries?.[idx];
+      const entryKey = (entry?.apiKey ?? '').trim() || (entry?.existingApiKey ?? '').trim();
+      const resolvedAuthIndex =
+        (entry?.authIndex ?? '').trim() || (authIndex ?? '').trim() || undefined;
+      const model = pickModel(testModel, models);
+      const probe = buildCompatibilityProbeRequest({
+        baseUrl: trimmedBase,
+        protocol: compatibilityProtocol,
+        authType: compatibilityAuthType,
+        model,
+        apiKey: entryKey,
+        authIndex: resolvedAuthIndex,
+        formHeaders,
+      });
+      if (!probe.url) {
         updateOpenaiStatus(idx, {
           state: 'error',
           message: messages.endpointInvalid,
         });
         return false;
       }
-      const entry = apiKeyEntries?.[idx];
-      const entryKey = (entry?.apiKey ?? '').trim() || (entry?.existingApiKey ?? '').trim();
-      const resolvedAuthIndex =
-        (entry?.authIndex ?? '').trim() || (authIndex ?? '').trim() || undefined;
       if (!entryKey && !resolvedAuthIndex) {
         updateOpenaiStatus(idx, {
           state: 'error',
@@ -211,25 +289,12 @@ export function useConnectivityTest(
         });
         return false;
       }
-      const model = pickModel(testModel, models);
       if (!model) {
         updateOpenaiStatus(idx, {
           state: 'error',
           message: messages.modelRequired,
         });
         return false;
-      }
-
-      const headerObj: Record<string, string> = {
-        'Content-Type': 'application/json',
-        ...buildHeaderObject(formHeaders),
-      };
-      if (!hasHeader(headerObj, 'authorization')) {
-        if (entryKey) {
-          headerObj.Authorization = `Bearer ${entryKey}`;
-        } else if (resolvedAuthIndex) {
-          headerObj.Authorization = 'Bearer $TOKEN$';
-        }
       }
 
       updateOpenaiStatus(idx, { state: 'loading', message: '' });
@@ -239,14 +304,9 @@ export function useConnectivityTest(
           {
             authIndex: resolvedAuthIndex,
             method: 'POST',
-            url: endpoint,
-            header: headerObj,
-            data: JSON.stringify({
-              model,
-              messages: [{ role: 'user', content: 'Hi' }],
-              stream: false,
-              max_tokens: 5,
-            }),
+            url: probe.url,
+            header: probe.header,
+            data: probe.data,
           },
           { timeout: DEFAULT_TIMEOUT_MS }
         );
@@ -270,6 +330,8 @@ export function useConnectivityTest(
       authIndex,
       baseUrl,
       brand,
+      compatibilityAuthType,
+      compatibilityProtocol,
       formHeaders,
       messages,
       models,
@@ -279,7 +341,7 @@ export function useConnectivityTest(
   );
 
   const runOpenAIAllKeys = useCallback(async (): Promise<void> => {
-    if (brand !== 'openaiCompatibility') return;
+    if (brand !== 'openaiCompatibility' && brand !== 'anthropicCompatibility') return;
     const entries = apiKeyEntries ?? [];
     if (!entries.length) return;
     await Promise.all(entries.map((_, idx) => runOpenAIKey(idx)));

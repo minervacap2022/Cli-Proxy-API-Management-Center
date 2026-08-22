@@ -144,7 +144,7 @@ export const buildExcludedModels = (
 ): string[] | undefined => {
   const list = parseTextList(textValue);
   const filtered = list.filter((v) => v !== '*');
-  if (brand === 'openaiCompatibility') {
+  if (brand === 'openaiCompatibility' || brand === 'anthropicCompatibility') {
     return filtered.length ? filtered : undefined;
   }
   if (disabled) {
@@ -229,7 +229,8 @@ const buildClaudeApiConfig = (
 
 const buildOpenAIConfig = (
   input: ProviderEntryFormInput,
-  existing?: OpenAIProviderConfig | null
+  existing?: OpenAIProviderConfig | null,
+  protocol: 'openai' | 'anthropic' = 'openai'
 ): OpenAIProviderConfig => {
   const headers = headersFromEntries(input.headers);
   const models = buildModelAliases(input.models, true);
@@ -250,6 +251,8 @@ const buildOpenAIConfig = (
   return {
     ...(existing ?? {}),
     name: input.name.trim(),
+    protocol,
+    authType: protocol === 'anthropic' ? (input.authType ?? 'bearer') : 'bearer',
     baseUrl: input.baseUrl.trim(),
     prefix: input.prefix.trim() || undefined,
     apiKeyEntries,
@@ -289,6 +292,8 @@ const buildSponsorOpenAIConfig = (
   return {
     ...(existing ?? {}),
     name: providerName,
+    protocol: 'openai',
+    authType: 'bearer',
     baseUrl: urls.openai,
     prefix: entry.prefix.trim() || undefined,
     disabled: entry.disabled,
@@ -535,6 +540,7 @@ export function useProviderWorkbench(): UseProviderWorkbenchResult {
           resources = (config.openaiCompatibility ?? []).reduce<ProviderResource[]>(
             (out, item, index) => {
               if (
+                item.protocol !== 'anthropic' &&
                 !isApiKeyFunOpenAIProvider(item) &&
                 !isCode0OpenAIProvider(item) &&
                 (qiniuCloudHidden || !isQiniuCloudOpenAIProvider(item)) &&
@@ -548,6 +554,11 @@ export function useProviderWorkbench(): UseProviderWorkbenchResult {
             },
             []
           );
+          break;
+        case 'anthropicCompatibility':
+          resources = (config.openaiCompatibility ?? [])
+            .filter((item) => item.protocol === 'anthropic')
+            .map((item, index) => openaiToResource(item, index, 'anthropicCompatibility'));
           break;
         case 'apikeyFun': {
           const sponsorResource = apiKeyFunToResource(buildApiKeyFunRaw(config));
@@ -741,8 +752,14 @@ export function useProviderWorkbench(): UseProviderWorkbenchResult {
           await providersApi.createVertexConfig(
             buildProviderKeyConfig('vertex', input) as ProviderKeyConfig
           );
-        } else if (brand === 'openaiCompatibility') {
-          await providersApi.createOpenAIProvider(buildOpenAIConfig(input));
+        } else if (brand === 'openaiCompatibility' || brand === 'anthropicCompatibility') {
+          await providersApi.createOpenAIProvider(
+            buildOpenAIConfig(
+              input,
+              undefined,
+              brand === 'anthropicCompatibility' ? 'anthropic' : 'openai'
+            )
+          );
         } else if (
           brand === 'apikeyFun' ||
           brand === 'code0' ||
@@ -816,11 +833,18 @@ export function useProviderWorkbench(): UseProviderWorkbenchResult {
             selector.baseUrl,
             buildProviderKeyConfig('vertex', input, existing) as ProviderKeyConfig
           );
-        } else if (brand === 'openaiCompatibility' && selector.brand === 'openaiCompatibility') {
+        } else if (
+          (brand === 'openaiCompatibility' || brand === 'anthropicCompatibility') &&
+          (selector.brand === 'openaiCompatibility' || selector.brand === 'anthropicCompatibility')
+        ) {
           await providersApi.updateOpenAIProvider(
             selector.name,
             selector.index,
-            buildOpenAIConfig(input, resource.raw as OpenAIProviderConfig)
+            buildOpenAIConfig(
+              input,
+              resource.raw as OpenAIProviderConfig,
+              brand === 'anthropicCompatibility' ? 'anthropic' : 'openai'
+            )
           );
         } else if (
           brand === 'apikeyFun' ||
@@ -874,7 +898,7 @@ export function useProviderWorkbench(): UseProviderWorkbenchResult {
           await providersApi.deleteVertexConfig(sel.apiKey, sel.baseUrl);
           const next = (config?.vertexApiKeys ?? []).filter((_, i) => i !== sel.index);
           updateConfigValue('vertex-api-key', next);
-        } else if (sel.brand === 'openaiCompatibility') {
+        } else if (sel.brand === 'openaiCompatibility' || sel.brand === 'anthropicCompatibility') {
           await providersApi.deleteOpenAIProvider(sel.index);
           const next = (config?.openaiCompatibility ?? []).filter(
             (item, index) => (item.sourceIndex ?? index) !== sel.index
@@ -961,7 +985,10 @@ export function useProviderWorkbench(): UseProviderWorkbenchResult {
           } else if (selector.brand === 'vertex') {
             await providersApi.updateVertexConfig(selector.apiKey, selector.baseUrl, next);
           }
-        } else if (brand === 'openaiCompatibility' && selector.brand === 'openaiCompatibility') {
+        } else if (
+          (brand === 'openaiCompatibility' || brand === 'anthropicCompatibility') &&
+          (selector.brand === 'openaiCompatibility' || selector.brand === 'anthropicCompatibility')
+        ) {
           await providersApi.updateOpenAIProviderDisabled(selector.index, disabled);
         } else if (
           brand === 'apikeyFun' ||

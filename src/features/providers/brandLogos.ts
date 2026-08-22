@@ -34,6 +34,7 @@ export const PROVIDER_LOGOS: Record<ProviderBrand, ProviderBrandLogo> = {
   xai: { src: xaiLightLogo, darkSrc: xaiDarkLogo, transparent: true },
   vertex: { src: vertexLogo },
   openaiCompatibility: { src: openaiLightLogo, darkSrc: openaiDarkLogo, transparent: true },
+  anthropicCompatibility: { src: claudeLogo },
   apikeyFun: { src: apikeyFunLogo },
   code0: { src: code0Logo },
   fennoAI: { src: fennoAILogo, transparent: true },

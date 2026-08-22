@@ -14,6 +14,7 @@ export type ProviderBrand =
   | 'claudeApi'
   | 'vertex'
   | 'openaiCompatibility'
+  | 'anthropicCompatibility'
   | 'apikeyFun'
   | 'code0'
   | 'fennoAI'
@@ -40,6 +41,7 @@ export type ProviderResourceSelector =
   | { brand: 'claudeApi'; apiKey: string; baseUrl?: string; index: number }
   | { brand: 'vertex'; apiKey: string; baseUrl?: string; index: number }
   | { brand: 'openaiCompatibility'; name: string; index: number }
+  | { brand: 'anthropicCompatibility'; name: string; index: number }
   | {
       brand: 'apikeyFun';
       openaiIndices: number[];
@@ -220,6 +222,8 @@ export interface ProviderEntryFormInput {
   /** Claude 专属 */
   cloak?: CloakInput;
   experimentalCchSigning?: boolean;
+  /** Anthropic-compatible upstream credential transport. */
+  authType?: 'bearer' | 'x-api-key';
   /** OpenAI persists this; Gemini/Claude use it for one-off connectivity tests. */
   testModel?: string;
   apiKeyEntries?: ApiKeyEntryInput[];

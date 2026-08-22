@@ -52,7 +52,7 @@ const resolveStatusBarData = (
   resource: ProviderResource,
   usageByProvider: ProviderRecentUsageMap
 ): StatusBarData => {
-  if (resource.brand === 'openaiCompatibility') {
+  if (resource.brand === 'openaiCompatibility' || resource.brand === 'anthropicCompatibility') {
     return getOpenAIProviderRecentStatusData(resource.raw as OpenAIProviderConfig, usageByProvider);
   }
   return getProviderRecentStatusData(
@@ -67,7 +67,7 @@ const resolveTotalStats = (
   resource: ProviderResource,
   usageByProvider: ProviderRecentUsageMap
 ): { success: number; failure: number } => {
-  if (resource.brand === 'openaiCompatibility') {
+  if (resource.brand === 'openaiCompatibility' || resource.brand === 'anthropicCompatibility') {
     return getOpenAIProviderTotalStats(resource.raw as OpenAIProviderConfig, usageByProvider);
   }
   return getProviderTotalStats(
@@ -116,7 +116,7 @@ export function ProviderResourceTable({
       });
       return <div className={styles.metricsCell}>{items}</div>;
     }
-    if (r.brand === 'openaiCompatibility') {
+    if (r.brand === 'openaiCompatibility' || r.brand === 'anthropicCompatibility') {
       items.push(
         renderMetric('models', t('providersPage.table.metrics.models'), r.modelCount),
         renderMetric('keys', t('providersPage.table.metrics.keys'), r.apiKeyEntryCount),
@@ -165,7 +165,7 @@ export function ProviderResourceTable({
         </div>
       );
     }
-    if (r.brand === 'openaiCompatibility') {
+    if (r.brand === 'openaiCompatibility' || r.brand === 'anthropicCompatibility') {
       const extra = r.apiKeyEntryCount > 1 ? ` · +${r.apiKeyEntryCount - 1}` : '';
       return (
         <div className={styles.primaryCell}>

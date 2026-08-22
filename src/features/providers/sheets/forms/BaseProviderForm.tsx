@@ -97,8 +97,10 @@ function buildInitialForm(
         ? { mode: '', strictMode: false, sensitiveWordsText: '', cacheUserId: false }
         : undefined,
       experimentalCchSigning: isClaudeLikeBrand(brand) ? false : undefined,
+      authType: brand === 'anthropicCompatibility' ? 'bearer' : undefined,
       testModel:
         brand === 'openaiCompatibility' ||
+        brand === 'anthropicCompatibility' ||
         brand === 'codex' ||
         brand === 'xai' ||
         isClaudeLikeBrand(brand) ||
@@ -106,12 +108,15 @@ function buildInitialForm(
         brand === 'interactions'
           ? ''
           : undefined,
-      apiKeyEntries: brand === 'openaiCompatibility' ? [emptyApiKeyEntry()] : undefined,
+      apiKeyEntries:
+        brand === 'openaiCompatibility' || brand === 'anthropicCompatibility'
+          ? [emptyApiKeyEntry()]
+          : undefined,
     };
   }
 
   const raw = resource.raw;
-  if (brand === 'openaiCompatibility') {
+  if (brand === 'openaiCompatibility' || brand === 'anthropicCompatibility') {
     const cfg = raw as OpenAIProviderConfig;
     return {
       apiKey: '',
@@ -138,6 +143,7 @@ function buildInitialForm(
         : [emptyHeader()],
       excludedModelsText: '',
       testModel: cfg.testModel ?? '',
+      authType: cfg.authType ?? 'bearer',
       apiKeyEntries: cfg.apiKeyEntries?.length
         ? cfg.apiKeyEntries.map((entry) => ({
             apiKey: '',
@@ -239,7 +245,7 @@ export function BaseProviderForm({
 
   const fallbackApiKey = useMemo(() => {
     if (mode !== 'edit' || !resource) return '';
-    if (brand === 'openaiCompatibility') return '';
+    if (brand === 'openaiCompatibility' || brand === 'anthropicCompatibility') return '';
     return (resource.raw as { apiKey?: string } | undefined)?.apiKey ?? '';
   }, [brand, mode, resource]);
 
@@ -271,6 +277,8 @@ export function BaseProviderForm({
       apiKey: form.apiKey,
       fallbackApiKey,
       authIndex: fallbackAuthIndex,
+      compatibilityProtocol: brand === 'anthropicCompatibility' ? 'anthropic' : 'openai',
+      compatibilityAuthType: form.authType ?? 'bearer',
     },
     connectivityMessages
   );
@@ -400,10 +408,12 @@ export function BaseProviderForm({
       return t('providersPage.form.validation.baseUrlRequired');
     }
     const weights = [
-      ...(brand === 'openaiCompatibility'
+      ...(brand === 'openaiCompatibility' || brand === 'anthropicCompatibility'
         ? (form.apiKeyEntries ?? []).map((entry) => entry.weight)
         : []),
-      ...(brand !== 'openaiCompatibility' ? [form.weight] : []),
+      ...(brand !== 'openaiCompatibility' && brand !== 'anthropicCompatibility'
+        ? [form.weight]
+        : []),
     ];
     if (weights.some((weight) => weight !== undefined && !Number.isSafeInteger(weight))) {
       return t('providersPage.form.validation.weightInteger');
@@ -484,7 +494,8 @@ export function BaseProviderForm({
     brand === 'codex' ||
     brand === 'xai' ||
     isClaudeLikeBrand(brand) ||
-    brand === 'openaiCompatibility';
+    brand === 'openaiCompatibility' ||
+    brand === 'anthropicCompatibility';
   const supportsModelImage = brand === 'openaiCompatibility';
   const singleConnectivity =
     brand === 'codex' || brand === 'xai'
@@ -648,7 +659,7 @@ export function BaseProviderForm({
           </div>
         ) : null}
 
-        {brand !== 'openaiCompatibility' ? (
+        {brand !== 'openaiCompatibility' && brand !== 'anthropicCompatibility' ? (
           <div className={styles.field}>
             <label className={styles.label} htmlFor={`${fid}-weight`}>
               {t('providersPage.form.weight')}
@@ -667,6 +678,26 @@ export function BaseProviderForm({
               disabled={mutating}
             />
             <span className={styles.labelHint}>{t('providersPage.form.weightHint')}</span>
+          </div>
+        ) : null}
+
+        {brand === 'anthropicCompatibility' ? (
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor={`${fid}-auth-type`}>
+              {t('providersPage.form.authType')}
+            </label>
+            <Select
+              id={`${fid}-auth-type`}
+              value={form.authType ?? 'bearer'}
+              options={[
+                { value: 'bearer', label: t('providersPage.form.authTypeBearer') },
+                { value: 'x-api-key', label: t('providersPage.form.authTypeAPIKey') },
+              ]}
+              onChange={(value) => updateField('authType', value as 'bearer' | 'x-api-key')}
+              disabled={mutating}
+              ariaLabel={t('providersPage.form.authType')}
+            />
+            <span className={styles.labelHint}>{t('providersPage.form.authTypeHint')}</span>
           </div>
         ) : null}
 

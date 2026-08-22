@@ -59,6 +59,8 @@ export interface ProviderKeyConfig {
 
 export interface OpenAIProviderConfig {
   name: string;
+  protocol?: 'openai' | 'anthropic';
+  authType?: 'bearer' | 'x-api-key';
   prefix?: string;
   baseUrl: string;
   apiKeyEntries: ApiKeyEntry[];

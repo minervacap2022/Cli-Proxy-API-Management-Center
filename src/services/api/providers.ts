@@ -57,6 +57,8 @@ const OPENAI_PROVIDER_FIELDS = [
   'priority',
   'disabled',
   'prefix',
+  'protocol',
+  'auth-type',
   'base-url',
   'api-key-entries',
   'headers',
@@ -418,6 +420,8 @@ const serializeOpenAIProvider = (provider: OpenAIProviderConfig) => {
       : [],
   };
   if (provider.prefix?.trim()) payload.prefix = provider.prefix.trim();
+  if (provider.protocol === 'anthropic') payload.protocol = 'anthropic';
+  if (provider.authType === 'x-api-key') payload['auth-type'] = 'x-api-key';
   if (provider.disabled !== undefined) payload.disabled = provider.disabled;
   const headers = serializeHeaders(provider.headers);
   if (headers) payload.headers = headers;
