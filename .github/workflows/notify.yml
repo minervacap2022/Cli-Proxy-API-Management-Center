@@ -1,0 +1,17 @@
+name: Notify Backend on Push
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Docker build in CLIProxyAPI
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.BACKEND_DISPATCH_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/minervacap2022/CLIProxyAPI/dispatches \
+            -d '{"event_type":"frontend-updated","client_payload":{"sha":"${{ github.sha }}"}}'

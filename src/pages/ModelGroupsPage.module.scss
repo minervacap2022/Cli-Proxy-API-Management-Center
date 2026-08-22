@@ -1,0 +1,352 @@
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  line-height: 24px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  min-width: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--count-badge-text);
+  background-color: var(--count-badge-bg);
+  box-sizing: border-box;
+}
+
+.description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.errorBox {
+  padding: $spacing-md;
+  background-color: rgba($error-color, 0.1);
+  border: 1px solid var(--danger-color);
+  border-radius: $radius-md;
+  color: var(--danger-color);
+  font-size: 14px;
+}
+
+.loadingBox {
+  padding: $spacing-lg;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.emptyBox {
+  padding: $spacing-xl $spacing-lg;
+  text-align: center;
+  background-color: var(--bg-secondary);
+  border-radius: $radius-lg;
+  border: 1px dashed var(--border-color);
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: $spacing-xs;
+}
+
+.emptyDesc {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.grid {
+  display: grid;
+  gap: $spacing-md;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cardActions {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+// ── Card tier display ──────────────────────────────────────
+
+.tierList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.cardTier {
+  background-color: var(--bg-secondary);
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.cardTierHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+}
+
+.priorityBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  background-color: var(--primary-color);
+  color: var(--primary-contrast, #fff);
+  flex-shrink: 0;
+}
+
+.lbBadge {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background-color: rgba(59, 130, 246, 0.12);
+  color: var(--info-color, #3b82f6);
+  font-weight: 500;
+}
+
+.fallbackBadge {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background-color: rgba(245, 158, 11, 0.12);
+  color: var(--warning-color, #d97706);
+  font-weight: 500;
+}
+
+.cardChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.cardChip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: $radius-sm;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.failoverArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  padding: 4px 0;
+  gap: 4px;
+}
+
+// ── Modal ──────────────────────────────────────────────────
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: $spacing-md;
+}
+
+.modal {
+  background-color: var(--bg-primary);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: $shadow-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// ── Tiers section in modal ─────────────────────────────────
+
+.tiersSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.tiersSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tiersLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.tierCard {
+  background-color: var(--bg-secondary);
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  border: 1px solid var(--border-color);
+}
+
+.tierHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tierPriorityRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.tierPriorityLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.tierPriorityInput {
+  width: 64px;
+  padding: 4px 8px;
+  border-radius: $radius-sm;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
+}
+
+.modelChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.modelChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: $radius-sm;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.chipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 50%;
+
+  &:hover {
+    color: var(--danger-color);
+    background-color: rgba($error-color, 0.1);
+  }
+}
+
+.tierAddRow {
+  display: flex;
+  gap: $spacing-sm;
+  align-items: flex-end;
+}
+
+.tierAddInput {
+  flex: 1;
+  min-width: 0;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+}

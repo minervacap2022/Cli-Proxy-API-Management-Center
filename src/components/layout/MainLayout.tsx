@@ -18,9 +18,11 @@ import { MainRoutes } from '@/router/MainRoutes';
 import { authFilesApi, pluginsApi } from '@/services/api';
 import {
   IconSidebarAuthFiles,
+  IconSidebarApiKeyConfigs,
   IconSidebarConfig,
   IconSidebarDashboard,
   IconSidebarLogs,
+  IconSidebarModelGroups,
   IconSidebarOauth,
   IconSidebarPlugins,
   IconSidebarProviders,
@@ -56,12 +58,14 @@ const sidebarIcons: Record<string, ReactNode> = {
   quickStart: <IconSidebarQuickStart size={18} />,
   aiProviders: <IconSidebarProviders size={18} />,
   authFiles: <IconSidebarAuthFiles size={18} />,
+  apiKeyConfigs: <IconSidebarApiKeyConfigs size={18} />,
   oauth: <IconSidebarOauth size={18} />,
   quota: <IconSidebarQuota size={18} />,
   plugins: <IconSidebarPlugins size={18} />,
   pluginStore: <IconSidebarStore size={18} />,
   config: <IconSidebarConfig size={18} />,
   logs: <IconSidebarLogs size={18} />,
+  modelGroups: <IconSidebarModelGroups size={18} />,
   system: <IconSidebarSystem size={18} />,
 };
 
@@ -661,6 +665,16 @@ export function MainLayout() {
           labelKey: 'nav.config_management',
           metaKey: 'nav_meta.config_management',
           icon: sidebarIcons.config,
+        },
+        {
+          path: '/api-key-configs',
+          labelKey: 'nav.api_key_configs',
+          icon: sidebarIcons.apiKeyConfigs,
+        },
+        {
+          path: '/model-groups',
+          labelKey: 'nav.model_groups',
+          icon: sidebarIcons.modelGroups,
         },
         ...(supportsPlugin
           ? [
