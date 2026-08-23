@@ -7,11 +7,19 @@ import { Input } from '@/components/ui/Input';
 import { IconPlug } from '@/components/ui/icons';
 import { useAuthStore, useNotificationStore, useThemeStore } from '@/stores';
 import { oauthApi, pluginsApi, type BuiltInOAuthProvider } from '@/services/api';
+import { modelsApi, providersApi } from '@/services/api';
 import { vertexApi, type VertexImportResponse } from '@/services/api/vertex';
 import { copyToClipboard } from '@/utils/clipboard';
 import { getErrorMessage, isRecord } from '@/utils/helpers';
 import { notifyAuthFilesChanged } from '@/features/authFiles/authFilesEvents';
 import { getPluginTitle, resolvePluginAssetURL } from '@/features/plugins/pluginResources';
+import {
+  buildCommandCodeProvider,
+  COMMAND_CODE_PROXY_BASE_URL,
+  isCommandCodeAccessKey,
+  isCommandCodeProvider,
+  normalizeCommandCodeAccessKey,
+} from '@/features/providers/commandCode';
 import type { PluginListEntry } from '@/types';
 import styles from './OAuthPage.module.scss';
 import iconCodex from '@/assets/icons/codex.svg';
@@ -49,6 +57,13 @@ interface VertexImportState {
   loading: boolean;
   error?: string;
   result?: VertexImportResult;
+}
+
+interface CommandCodeState {
+  accessKey: string;
+  loading: boolean;
+  error?: string;
+  connectedModelCount?: number;
 }
 
 interface BuiltInOAuthProviderCard {
@@ -250,6 +265,10 @@ export function OAuthPage() {
   const [vertexState, setVertexState] = useState<VertexImportState>({
     fileName: '',
     location: '',
+    loading: false,
+  });
+  const [commandCodeState, setCommandCodeState] = useState<CommandCodeState>({
+    accessKey: '',
     loading: false,
   });
   const pollingTimers = useRef<Partial<Record<string, number>>>({});
@@ -568,6 +587,50 @@ export function OAuthPage() {
     }
   };
 
+  const handleCommandCodeConnect = async () => {
+    const accessKey = normalizeCommandCodeAccessKey(commandCodeState.accessKey);
+    if (!isCommandCodeAccessKey(accessKey)) {
+      setCommandCodeState((prev) => ({
+        ...prev,
+        error: t('auth_login.commandcode_key_invalid'),
+        connectedModelCount: undefined,
+      }));
+      return;
+    }
+
+    setCommandCodeState((prev) => ({ ...prev, loading: true, error: undefined }));
+    try {
+      const models = await modelsApi.fetchModelsViaApiCall(COMMAND_CODE_PROXY_BASE_URL, accessKey);
+      if (!models.length) {
+        throw new Error(t('auth_login.commandcode_models_empty'));
+      }
+
+      const providers = await providersApi.getOpenAIProviders();
+      const existing = providers.find(isCommandCodeProvider);
+      const next = buildCommandCodeProvider(accessKey, models, existing);
+      if (existing?.sourceIndex !== undefined) {
+        await providersApi.updateOpenAIProvider(existing.name, existing.sourceIndex, next);
+      } else {
+        await providersApi.createOpenAIProvider(next);
+      }
+
+      notifyAuthFilesChanged();
+      setCommandCodeState({
+        accessKey: '',
+        loading: false,
+        connectedModelCount: models.length,
+      });
+      showNotification(t('auth_login.commandcode_connect_success'), 'success');
+    } catch (err: unknown) {
+      setCommandCodeState((prev) => ({
+        ...prev,
+        loading: false,
+        error: getErrorMessage(err),
+        connectedModelCount: undefined,
+      }));
+    }
+  };
+
   const renderOAuthProviderCard = (provider: OAuthProviderCard, featured = false) => {
     const state = states[provider.id] || {};
     const showKimiSignUp = featured && provider.kind === 'builtin' && provider.id === 'kimi';
@@ -731,6 +794,44 @@ export function OAuthPage() {
         {/* Vertex JSON 登录 */}
         <section className={styles.providerSection}>
           <h2 className={styles.sectionTitle}>{t('auth_login.other_login_methods')}</h2>
+          <Card
+            title={t('auth_login.commandcode_title')}
+            extra={
+              <Button onClick={handleCommandCodeConnect} loading={commandCodeState.loading}>
+                {t('auth_login.commandcode_connect_button')}
+              </Button>
+            }
+          >
+            <div className={styles.cardContent}>
+              <p className={styles.cardHint}>{t('auth_login.commandcode_hint')}</p>
+              <Input
+                label={t('auth_login.commandcode_key_label')}
+                type="password"
+                autoComplete="off"
+                value={commandCodeState.accessKey}
+                onChange={(event) =>
+                  setCommandCodeState((prev) => ({
+                    ...prev,
+                    accessKey: event.target.value,
+                    error: undefined,
+                    connectedModelCount: undefined,
+                  }))
+                }
+                placeholder={t('auth_login.commandcode_key_placeholder')}
+                hint={t('auth_login.commandcode_key_hint')}
+              />
+              {commandCodeState.error && (
+                <div className="status-badge error">{commandCodeState.error}</div>
+              )}
+              {commandCodeState.connectedModelCount !== undefined && (
+                <div className="status-badge success">
+                  {t('auth_login.commandcode_connected_models', {
+                    count: commandCodeState.connectedModelCount,
+                  })}
+                </div>
+              )}
+            </div>
+          </Card>
           <Card
             title={
               <span className={styles.cardTitle}>
