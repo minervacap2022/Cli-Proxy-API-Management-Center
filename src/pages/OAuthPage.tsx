@@ -15,12 +15,13 @@ import { notifyAuthFilesChanged } from '@/features/authFiles/authFilesEvents';
 import { getPluginTitle, resolvePluginAssetURL } from '@/features/plugins/pluginResources';
 import {
   buildCommandCodeProvider,
-  COMMAND_CODE_PROXY_BASE_URL,
+  COMMAND_CODE_PROXY_BASE_URLS,
   isCommandCodeAccessKey,
   isCommandCodeProvider,
   normalizeCommandCodeAccessKey,
 } from '@/features/providers/commandCode';
 import type { PluginListEntry } from '@/types';
+import type { ModelInfo } from '@/utils/models';
 import styles from './OAuthPage.module.scss';
 import iconCodex from '@/assets/icons/codex.svg';
 import iconClaude from '@/assets/icons/claude.svg';
@@ -600,14 +601,25 @@ export function OAuthPage() {
 
     setCommandCodeState((prev) => ({ ...prev, loading: true, error: undefined }));
     try {
-      const models = await modelsApi.fetchModelsViaApiCall(COMMAND_CODE_PROXY_BASE_URL, accessKey);
+      let baseUrl = '';
+      let models: ModelInfo[] = [];
+      let discoveryError: unknown;
+      for (const candidate of COMMAND_CODE_PROXY_BASE_URLS) {
+        try {
+          models = await modelsApi.fetchModelsViaApiCall(candidate, accessKey);
+          baseUrl = candidate;
+          break;
+        } catch (err: unknown) {
+          discoveryError = err;
+        }
+      }
       if (!models.length) {
-        throw new Error(t('auth_login.commandcode_models_empty'));
+        throw discoveryError ?? new Error(t('auth_login.commandcode_models_empty'));
       }
 
       const providers = await providersApi.getOpenAIProviders();
       const existing = providers.find(isCommandCodeProvider);
-      const next = buildCommandCodeProvider(accessKey, models, existing);
+      const next = buildCommandCodeProvider(accessKey, models, existing, baseUrl);
       if (existing?.sourceIndex !== undefined) {
         await providersApi.updateOpenAIProvider(existing.name, existing.sourceIndex, next);
       } else {

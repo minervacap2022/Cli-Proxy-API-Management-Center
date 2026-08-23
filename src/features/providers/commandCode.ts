@@ -3,6 +3,11 @@ import type { OpenAIProviderConfig } from '@/types';
 
 export const COMMAND_CODE_PROVIDER_NAME = 'commandcode';
 export const COMMAND_CODE_PROXY_BASE_URL = 'http://commandcode-proxy:3050/v1';
+export const COMMAND_CODE_HOST_PROXY_BASE_URL = 'http://127.0.0.1:3050/v1';
+export const COMMAND_CODE_PROXY_BASE_URLS = [
+  COMMAND_CODE_PROXY_BASE_URL,
+  COMMAND_CODE_HOST_PROXY_BASE_URL,
+] as const;
 
 export const normalizeCommandCodeAccessKey = (value: string): string => value.trim();
 
@@ -29,7 +34,8 @@ const normalizeModels = (models: ModelInfo[]) => {
 export const buildCommandCodeProvider = (
   accessKey: string,
   models: ModelInfo[],
-  existing?: OpenAIProviderConfig
+  existing?: OpenAIProviderConfig,
+  baseUrl = COMMAND_CODE_PROXY_BASE_URL
 ): OpenAIProviderConfig => {
   const normalizedAccessKey = normalizeCommandCodeAccessKey(accessKey);
   const existingEntries = existing?.apiKeyEntries ?? [];
@@ -40,7 +46,7 @@ export const buildCommandCodeProvider = (
     name: COMMAND_CODE_PROVIDER_NAME,
     protocol: 'openai',
     authType: 'bearer',
-    baseUrl: COMMAND_CODE_PROXY_BASE_URL,
+    baseUrl,
     apiKeyEntries: hasAccessKey
       ? existingEntries
       : [...existingEntries, { apiKey: normalizedAccessKey }],

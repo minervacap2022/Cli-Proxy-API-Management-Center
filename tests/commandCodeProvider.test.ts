@@ -1,7 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 import {
   buildCommandCodeProvider,
+  COMMAND_CODE_HOST_PROXY_BASE_URL,
   COMMAND_CODE_PROXY_BASE_URL,
+  COMMAND_CODE_PROXY_BASE_URLS,
   isCommandCodeAccessKey,
   isCommandCodeProvider,
 } from '../src/features/providers/commandCode';
@@ -32,6 +34,22 @@ describe('Command Code provider onboarding', () => {
         { name: 'claude-sonnet-5', alias: 'claude-sonnet-5' },
       ],
     });
+  });
+
+  test('supports both Compose and host-network sidecar endpoints', () => {
+    expect(COMMAND_CODE_PROXY_BASE_URLS).toEqual([
+      COMMAND_CODE_PROXY_BASE_URL,
+      COMMAND_CODE_HOST_PROXY_BASE_URL,
+    ]);
+
+    const provider = buildCommandCodeProvider(
+      'user_example',
+      [{ name: 'gpt-5.6-luna' }],
+      undefined,
+      COMMAND_CODE_HOST_PROXY_BASE_URL
+    );
+
+    expect(provider.baseUrl).toBe(COMMAND_CODE_HOST_PROXY_BASE_URL);
   });
 
   test('preserves existing settings and does not duplicate a reconnecting key', () => {
